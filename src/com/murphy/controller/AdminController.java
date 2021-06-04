@@ -33,6 +33,7 @@ public class AdminController {
             // 0:0 - 本机IP
             String ip = request.getRemoteAddr();
             AdminService.updateLoginTimeAndIP(username,date,ip);
+            request.getSession().setAttribute("adminUserName","username");
         } else {
             // {status:-1, result:"登录失败"}
             msg = new Message(1,"登录失败");
