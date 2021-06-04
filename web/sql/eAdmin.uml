@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>d78cc35b-efbf-4170-a83f-f0ce0aa6ee8f.TABLE:ExpressManage.eAdmin</OriginalElement>
+  <nodes>
+    <node x="0.0" y="0.0">d78cc35b-efbf-4170-a83f-f0ce0aa6ee8f.TABLE:ExpressManage.eAdmin</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="1.0" x="87.5" y="82.5" />
+  <SelectedNodes>
+    <node>d78cc35b-efbf-4170-a83f-f0ce0aa6ee8f.TABLE:ExpressManage.eAdmin</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
+ * eAdmin Dao的实现类
  * @author murphy
  */
 public class AdminDaoMysql implements BaseAdminDao {

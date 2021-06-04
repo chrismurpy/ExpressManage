@@ -44,17 +44,23 @@ public class DruidUtil {
 
     public static void close(Connection conn, Statement state, ResultSet rs){
         try {
-            rs.close();
+            if (rs != null) {
+                rs.close();
+            }
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }
         try {
-            state.close();
+            if (state != null) {
+                state.close();
+            }
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }
         try {
-            conn.close();
+            if (conn != null) {
+                conn.close();
+            }
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }
