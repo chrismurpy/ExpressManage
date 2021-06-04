@@ -53,7 +53,7 @@ public class ExpressDaoMysqlTest {
 
     @Test
     public void insert() {
-        Express e = new Express("YD123999","cici","18723810291","韵达快递","18888889999","481202");
+        Express e = new Express("ST524999","Qianzai","18723810291","申通快递","18888889999","481202");
         boolean insert = false;
         try {
             insert = dao.insert(e);
