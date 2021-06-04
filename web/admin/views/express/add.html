@@ -12,7 +12,7 @@
         <div class="layui-row">
             <div class="layui-card">
                 <div class="layui-card-header">录入快件</div>
-                <form class="layui-form layui-card-body" action="">
+                <form id="form" class="layui-form layui-card-body" onsubmit="">
                   <div class="layui-form-item">
                     <label class="layui-form-label">单号</label>
                     <div class="layui-input-block">
@@ -51,9 +51,41 @@
         </div>
     </div>
     <script src="../../assets/layui.all.js"></script>
+    <script src="/qrcode/jquery2.1.4.js"></script>
+    <script src="/layer/layer.js"></script>
     <script>
       var form = layui.form
         ,layer = layui.layer;
+    </script>
+    <script>
+        $(function (){
+            $("#form").submit(function (){
+                var windowId = layer.load();
+                var number = $("input:eq(0)").val();
+                var company = $("input:eq(1)").val();
+                var username = $("input:eq(2)").val();
+                var userPhone = $("input:eq(3)").val();
+                $.post("/express/insert.do",
+                    {
+                        number: number,
+                        company: company,
+                        username: username,
+                        userPhone: userPhone
+                    },function (data){
+                        layer.close(windowId);
+                        layer.msg(data.result);
+                        if (data.status == 0) {
+                            // 录入成功 - 输入框恢复默认
+                            $("input").val("");
+                            $("input:eq(1)").val("顺丰速运");
+                        } else {
+                            // 录入失败
+                        }
+                    });
+
+                return false;
+            });
+        });
     </script>
 </body>
 </html>

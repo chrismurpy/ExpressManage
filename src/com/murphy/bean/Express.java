@@ -34,6 +34,14 @@ public class Express {
         this.sysPhone = sysPhone;
     }
 
+    public Express(String number, String username, String userPhone, String company, String sysPhone) {
+        this.number = number;
+        this.username = username;
+        this.userPhone = userPhone;
+        this.company = company;
+        this.sysPhone = sysPhone;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

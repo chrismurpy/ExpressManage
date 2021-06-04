@@ -8,6 +8,7 @@ import com.murphy.mvc.ResponseBody;
 import com.murphy.service.ExpressService;
 import com.murphy.util.DateFormatUtil;
 import com.murphy.util.JSONUtil;
+import com.murphy.util.UserUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +62,29 @@ public class ExpressController {
         data.setRows(list2);
         data.setTotal(total);
         String json = JSONUtil.toJSON(data);
+        return json;
+    }
+
+    @ResponseBody("/express/insert.do")
+    public String insert(HttpServletRequest request, HttpServletResponse response) {
+        String number = request.getParameter("number");
+        String company = request.getParameter("company");
+        String username = request.getParameter("username");
+        String userPhone = request.getParameter("userPhone");
+
+        Express e = new Express(number,username,userPhone,company, UserUtil.getSysPhone(request.getSession()));
+        boolean flag = ExpressService.insert(e);
+        Message msg = new Message();
+        if (flag) {
+            // 录入成功
+            msg.setStatus(0);
+            msg.setResult("快递录入成功！");
+        } else {
+            // 录入失败
+            msg.setStatus(-1);
+            msg.setResult("快递录入失败！");
+        }
+        String json = JSONUtil.toJSON(msg);
         return json;
     }
 }
