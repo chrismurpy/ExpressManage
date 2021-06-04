@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../assets/css/layui.css">
     <link rel="stylesheet" href="../assets/css/view.css"/>
     <script src="../assets/echarts.min.js"></script>
+    <script src="../../qrcode/jquery2.1.4.js"></script>
     <title></title>
 </head>
 <body class="layui-view-body">
@@ -67,7 +68,7 @@
                                 <div class="meta">
                                     <span>总快件数</span>
                                 </div>
-                                <div class="total">126,560</div>
+                                <div id="data1_Size" class="total">-</div>
                             </div>
                         </div>
                         <div class="chart-body">
@@ -77,7 +78,7 @@
                         <div class="chart-footer">
                             <div class="field">
                                 <span>日派单量</span>
-                                <span>999</span>
+                                <span id="data1_Day">-</span>
                             </div>
                         </div>
                     </div>
@@ -91,7 +92,7 @@
                                 <div class="meta">
                                     <span>待取件数</span>
                                 </div>
-                                <div class="total">1168</div>
+                                <div id="data2_Size" class="total">-</div>
                             </div>
                         </div>
                         <div class="chart-body">
@@ -101,7 +102,7 @@
                         <div class="chart-footer">
                             <div class="field">
                                 <span>新增数量</span>
-                                <span>333</span>
+                                <span id="data2_Day">-</span>
                             </div>
                         </div>
                     </div>
@@ -127,6 +128,20 @@
     <script src="../assets/layui.all.js"></script>
     <script>
      var element = layui.element;
+    </script>
+    <script>
+        $(function (){
+            //1.    ajax与服务器交互
+            $.post("/express/console.do",null,function(data){
+                if (data.status == 0) {
+                    // [{size:总数, day:新增}, {size:总数, day:新增}]
+                    $("#data1_Size").html(data.data[0].data1_Size);
+                    $("#data1_Day").html(data.data[0].data1_Day);
+                    $("#data2_Size").html(data.data[1].data2_Size);
+                    $("#data2_Day").html(data.data[1].data2_Day);
+                }
+            },"JSON");
+        });
     </script>
 </body>
 </html>

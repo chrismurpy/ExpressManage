@@ -40,6 +40,14 @@ public class Message {
         this.status = status;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public Message(int status, String result, Object data) {
         this.status = status;
         this.result = result;
