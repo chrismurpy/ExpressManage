@@ -14,7 +14,10 @@
 			<div class="content">
 				<table>	
 					<tr>
-						<td class="text-right">运单号</td><td class="content_right"><input class="input inline-input" placeholder="请输入运单号码"> <span class="btn btn-info">立即查找</span></td>
+						<td class="text-right">运单号</td><td class="content_right">
+						<input class="input inline-input" id="number" placeholder="请输入运单号码">
+						<span class="btn btn-info" id="find">立即查找</span>
+					</td>
 					</tr>
 				</table>
 			</div>
@@ -38,13 +41,76 @@
 						<td class="text-right">手机号码</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
 					</tr>
 					<tr>
-						<td class="text-right">快递状态</td><td class="content_right"><input type="radio" name="status">已签收  <input name="status" type="radio">未签收</td>
+						<td class="text-right">快递状态</td>
+						<td class="content_right">
+						<input class="status" type="radio" name="status" value="1">已签收
+						<input class="status" name="status" type="radio" value="0">未签收
+						</td>
 					</tr>
 					<tr>
-						<td></td><td class="content_right"><span class="btn btn-info">立即修改</span> <span class="btn">重置</span> </td>
+						<td></td><td class="content_right"><span class="btn btn-info" id="update">立即修改</span> <span class="btn">重置</span> </td>
 					</tr>
 				</table>
 			</div>
 		</div>
 	</body>
+	<script src="/qrcode/jquery2.1.4.js"></script>
+	<script src="/layer/layer.js"></script>
+	<script>
+		$(".header:eq(1),.content:eq(1)").hide();
+		var expressId = null;
+		var g_userPhone = null;
+		$(function (){
+			$("#find").click(function (){
+				var windowId = layer.load();
+				var number = $("#number").val();
+				$.getJSON("/express/find.do", {number:number},function (data){
+					layer.close(windowId);
+					layer.msg(data.result)
+					if (data.status == 0){
+						$(".header:eq(1),.content:eq(1)").fadeIn(1000);
+						expressId = data.data.id;
+						g_userPhone = data.data.userPhone;
+						$("input:eq(1)").val(data.data.number);
+						$("input:eq(2)").val(data.data.company);
+						$("input:eq(3)").val(data.data.username);
+						$("input:eq(4)").val(data.data.userPhone);
+						if (data.data.status == 0){
+							// 未签收
+							$(".status:eq(1)").prop("checked",true);
+						} else {
+							// 已签收
+							$(".status:eq(0)").prop("checked",true);
+						}
+					}
+				});
+			});
+			$("#update").click(function (){
+				var windowId = layer.load();
+				var number = $("input:eq(1)").val();
+				var company = $("input:eq(2)").val();
+				var username = $("input:eq(3)").val();
+				var userPhone = $("input:eq(4)").val();
+				var status = $(".status:checked").val(); // 获取选中单选按钮的值
+				var express = {
+					id: expressId,
+					number: number,
+					company: company,
+					username: username,
+					status: status
+				};
+				if (userPhone != g_userPhone){
+					express.userPhone = userPhone;
+				}
+				$.getJSON("/express/update.do",express,function (data){
+					layer.close(windowId);
+					layer.msg(data.result);
+					if (data.status == 0) {
+						// 修改成功
+						$(".header:eq(1),.content:eq(1)").hide();
+					}
+				});
+			});
+		});
+	</script>
 </html>

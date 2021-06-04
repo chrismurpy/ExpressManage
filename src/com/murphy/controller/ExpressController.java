@@ -23,6 +23,12 @@ import java.util.Map;
  * @since 2021/6/4 5:08 下午
  */
 public class ExpressController {
+    /**
+     * 总件数统计
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/express/console.do")
     public String console(HttpServletRequest request, HttpServletResponse response){
         List<Map<String, Integer>> data = ExpressService.console();
@@ -37,6 +43,12 @@ public class ExpressController {
         return json;
     }
 
+    /**
+     * 分页查询
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/express/list.do")
     public String list(HttpServletRequest request, HttpServletResponse response) {
         // 1. 获取查询数据的起始索引值
@@ -65,6 +77,12 @@ public class ExpressController {
         return json;
     }
 
+    /**
+     * 快递录入
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/express/insert.do")
     public String insert(HttpServletRequest request, HttpServletResponse response) {
         String number = request.getParameter("number");
@@ -83,6 +101,85 @@ public class ExpressController {
             // 录入失败
             msg.setStatus(-1);
             msg.setResult("快递录入失败！");
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 根据单号查找
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/express/find.do")
+    public String find(HttpServletRequest request, HttpServletResponse response){
+        String number = request.getParameter("number");
+        Express e = ExpressService.findByNumber(number);
+        Message msg = new Message();
+        if (e == null) {
+            msg.setStatus(-1);
+            msg.setResult("单号不存在");
+        } else {
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+            msg.setData(e);
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 修改快递信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/express/update.do")
+    public String update(HttpServletRequest request, HttpServletResponse response) {
+        Integer id = Integer.parseInt(request.getParameter("id"));
+        String number = request.getParameter("number");
+        String company = request.getParameter("company");
+        String username = request.getParameter("username");
+        String userPhone = request.getParameter("userPhone");
+        Integer status = Integer.parseInt(request.getParameter("status"));
+
+        Express newExpress = new Express();
+        newExpress.setNumber(number);
+        newExpress.setUsername(username);
+        newExpress.setUserPhone(userPhone);
+        newExpress.setCompany(company);
+        newExpress.setStatus(status);
+        boolean flag = ExpressService.update(id, newExpress);
+        Message msg = new Message();
+        if (flag) {
+            msg.setStatus(0);
+            msg.setResult("修改成功");
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("修改失败");
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 删除快递
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/express/delete.do")
+    public String delete(HttpServletRequest request, HttpServletResponse response) {
+        Integer id = Integer.parseInt(request.getParameter("id"));
+        boolean flag = ExpressService.delete(id);
+        Message msg = new Message();
+        if (flag) {
+            msg.setStatus(0);
+            msg.setResult("删除成功");
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("删除失败");
         }
         String json = JSONUtil.toJSON(msg);
         return json;
