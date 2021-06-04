@@ -64,6 +64,20 @@ public class ExpressDaoMysqlTest {
     }
 
     @Test
+    public void insert1() {
+        boolean insert = false;
+        try {
+            for (int i=0; i<100; i++) {
+                Express e = new Express("ZT81271" + i,"chris","16696121481","中通快递","18877779999",444000 + i + "");
+                insert = dao.insert(e);
+            }
+        } catch (DuplicateCodeException duplicateCodeException) {
+            System.out.println("取件码重复的异常被捕获到了！");
+        }
+        System.out.println(insert);
+    }
+
+    @Test
     public void update() {
         Express e = new Express();
         e.setNumber("SF124990");
