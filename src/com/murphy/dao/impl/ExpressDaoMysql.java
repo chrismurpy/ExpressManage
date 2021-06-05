@@ -207,7 +207,6 @@ public class ExpressDaoMysql implements BaseExpressDao {
             // 6. 资源的释放
             DruidUtil.close(conn,state,result);
         }
-
         return null;
     }
 
