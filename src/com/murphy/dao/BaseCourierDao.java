@@ -47,7 +47,7 @@ public interface BaseCourierDao {
      * @return 录入的结果 - true / false
      * @throws DuplicateCodeException
      */
-    boolean insert(Courier c) throws DuplicateCodeException;
+    boolean insert(Courier c);
 
     /**
      * 快递员信息的修改

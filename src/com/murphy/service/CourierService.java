@@ -65,7 +65,7 @@ public class CourierService{
      * @return 录入的结果 - true / false
      * @throws DuplicateCodeException
      */
-    public static boolean insert(Courier c) throws DuplicateCodeException {
+    public static boolean insert(Courier c){
         return dao.insert(c);
     }
 

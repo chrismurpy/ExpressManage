@@ -29,16 +29,16 @@
 			<div class="content">
 				<table>
 					<tr>
-						<td class="text-right">快递单号</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
+						<td class="text-right">快递单号</td><td class="content_right"><input class="input" placeholder="请输入快递单号"></td>
 					</tr>
 					<tr>
-						<td class="text-right">快递公司</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
+						<td class="text-right">快递公司</td><td class="content_right"><input class="input" placeholder="请输入快递公司名称"></td>
 					</tr>
 					<tr>
-						<td class="text-right">收货人姓名</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
+						<td class="text-right">收货人姓名</td><td class="content_right"><input class="input" placeholder="请输入收货人姓名"></td>
 					</tr>
 					<tr>
-						<td class="text-right">手机号码</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
+						<td class="text-right">手机号码</td><td class="content_right"><input class="input" placeholder="请输入手机号码"></td>
 					</tr>
 					<tr>
 						<td class="text-right">快递状态</td>
@@ -66,7 +66,7 @@
 				var number = $("#number").val();
 				$.getJSON("/express/find.do", {number:number},function (data){
 					layer.close(windowId);
-					layer.msg(data.result)
+					layer.msg(data.result);
 					if (data.status == 0){
 						$(".header:eq(1),.content:eq(1)").fadeIn(1000);
 						expressId = data.data.id;

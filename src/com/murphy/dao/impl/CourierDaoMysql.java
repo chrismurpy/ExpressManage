@@ -51,7 +51,7 @@ public class CourierDaoMysql implements BaseCourierDao {
      */
     private static final String SQL_INSERT = "INSERT INTO COURIER " +
             "(CNAME,CPHONE,IDNUMBER,PASSWORD,CNUMBER,CINTIME) " +
-            "VALUES(?,?,?,?,?,NOW())";
+            "VALUES(?,?,?,?,0,NOW())";
 
     /**
      * 快递员信息修改
@@ -231,7 +231,7 @@ public class CourierDaoMysql implements BaseCourierDao {
      * @return 录入的结果 - true / false
      */
     @Override
-    public boolean insert(Courier c) throws DuplicateCodeException {
+    public boolean insert(Courier c){
         Connection conn = DruidUtil.getConnection();
         PreparedStatement state = null;
         try {
@@ -240,16 +240,9 @@ public class CourierDaoMysql implements BaseCourierDao {
             state.setString(2,c.getcPhone());
             state.setString(3,c.getIdNumber());
             state.setString(4, c.getPassword());
-            state.setInt(5,c.getcNumber());
             return state.executeUpdate() > 0 ? true : false;
         } catch (SQLException throwables) {
-            if (throwables.getMessage().endsWith("for key 'Courier_cphone_uindex'")) {
-                // 手机号重复，出现异常
-                DuplicateCodeException e1 = new DuplicateCodeException(throwables.getMessage());
-                throw e1;
-            } else {
-                throwables.printStackTrace();
-            }
+            throwables.printStackTrace();
         } finally {
             DruidUtil.close(conn,state,null);
         }
