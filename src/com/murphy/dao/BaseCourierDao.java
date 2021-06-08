@@ -35,7 +35,7 @@ public interface BaseCourierDao {
     Courier findBycPhone(String cPhone);
 
     /**
-     * 根据快递员姓名，查询快递员信息
+     * 根据快递员姓名，模糊查询快递员信息
      * @param cName 快递员姓名
      * @return 查询的快递员信息
      */
@@ -53,7 +53,7 @@ public interface BaseCourierDao {
      * 快递员信息的修改
      * @param cId 要修改的快递员ID
      * @param newCourier 新的快递员对象 (cName, cPhone, idNumber, password)
-     * @return
+     * @return 修改的结果 - true / false
      */
     boolean update(int cId, Courier newCourier);
 

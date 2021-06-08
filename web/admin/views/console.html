@@ -20,7 +20,7 @@
                                 <div class="meta">
                                     <span>用户人数</span>
                                 </div>
-                                <div class="total">6666</div>
+                                <div class="total" id="u1_Total">-</div>
                             </div>
                         </div>
                         <div class="chart-body">
@@ -30,7 +30,7 @@
                         <div class="chart-footer">
                             <div class="field">
                                 <span>日注册量</span>
-                                <span>666</span>
+                                <span id="u1_Day">-</span>
                             </div>
                         </div>
                     </div>
@@ -148,6 +148,13 @@
                     $("#c1_Day").html(data.data[0].c1_Day);
                 }
             },"JSON");
+            $.post("/user/uConsole.do",null,function (data){
+                if (data.status == 0) {
+                    // [{total:总数, day:新增}]
+                    $("#u1_Total").html(data.data[0].u1_Total);
+                    $("#u1_Day").html(data.data[0].u1_Day);
+                }
+            })
         });
     </script>
 </body>

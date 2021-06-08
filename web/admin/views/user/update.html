@@ -1,47 +1,106 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title></title>
-		<link rel="stylesheet" type="text/css" href="../../css/reset.css"/>
-		<link rel="stylesheet" type="text/css" href="../../css/add.css"/>
-	</head>
-	<body>
-		<div id="app">
-			<div class="header">
-				<span>修改快递员</span>
-			</div>
-			<div class="content">
-				<table>	
-					<tr>
-						<td class="text-right">手机号码</td><td class="content_right"><input class="input inline-input" placeholder="请输入手机号码"> <span class="btn btn-info">立即查找</span></td>
-					</tr>
-				</table>
-			</div>
-			
-			
-			<div class="header">
-				<span>查找信息如下</span>
-			</div>
-			<div class="content">
-				<table>
-					<tr>
-						<td class="text-right">姓名</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
-					</tr>
-					<tr>
-						<td class="text-right">手机号码</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
-					</tr>
-					<tr>
-						<td class="text-right">身份证号码</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
-					</tr>
-					<tr>
-						<td class="text-right">密码</td><td class="content_right"><input class="input" placeholder="请输入姓名"></td>
-					</tr>
-					<tr>
-						<td></td><td class="content_right"><span class="btn btn-info">立即修改</span> <span class="btn">重置</span> </td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</body>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/add.css"/>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span>修改用户信息</span>
+    </div>
+    <div class="content">
+        <table>
+            <tr>
+                <td class="text-right">手机号码</td>
+                <td class="content_right">
+                    <input class="input inline-input" id="uPhone" placeholder="请输入手机号码">
+                    <span
+                        class="btn btn-info" id="find">立即查找
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div class="header">
+        <span>查找信息如下</span>
+    </div>
+    <div class="content">
+        <table>
+            <tr>
+                <td class="text-right">姓名</td>
+                <td class="content_right"><input class="input" placeholder="请输入姓名"></td>
+            </tr>
+            <tr>
+                <td class="text-right">手机号码</td>
+                <td class="content_right"><input class="input" placeholder="请输入手机号码"></td>
+            </tr>
+            <tr>
+                <td class="text-right">身份证号码</td>
+                <td class="content_right"><input class="input" placeholder="请输入身份证号码"></td>
+            </tr>
+            <tr>
+                <td class="text-right">密码</td>
+                <td class="content_right"><input class="input" placeholder="请输入密码"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="content_right">
+                    <span class="btn btn-info" id="update">立即修改</span>
+                    <span class="btn">重置</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+<script src="/qrcode/jquery2.1.4.js"></script>
+<script src="/layer/layer.js"></script>
+<script>
+    $(".header:eq(1),.content:eq(1)").hide();
+    var userId = null;
+    $(function (){
+       $("#find").click(function (){
+           var windowId = layer.load();
+           var uPhone = $("#uPhone").val();
+           $.getJSON("/user/find.do",{uPhone: uPhone}, function (data){
+               layer.close(windowId);
+               layer.msg(data.result);
+               if (data.status == 0) {
+                   $(".header:eq(1),.content:eq(1)").fadeIn(1000);
+                   userId = data.data.uId;
+                   $("input:eq(1)").val(data.data.uName);
+                   $("input:eq(2)").val(data.data.uPhone);
+                   $("input:eq(3)").val(data.data.idNumber);
+                   $("input:eq(4)").val(data.data.password);
+               }
+           });
+           $("#update").click(function (){
+               var windowId = layer.load();
+               var uName = $("input:eq(1)").val();
+               var uPhone = $("input:eq(2)").val();
+               var idNumber = $("input:eq(3)").val();
+               var password = $("input:eq(4)").val();
+               var user = {
+                   uId: userId,
+                   uName: uName,
+                   uPhone: uPhone,
+                   idNumber: idNumber,
+                   password: password
+               }
+               $.getJSON("/user/update.do", user, function (data){
+                   layer.close(windowId);
+                   layer.msg(data.result);
+                   if (data.status == 0) {
+                       $(".header:eq(1),.content:eq(1)").hide();
+                   }
+               });
+           });
+       });
+    });
+</script>
 </html>

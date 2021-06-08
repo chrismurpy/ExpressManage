@@ -2,7 +2,6 @@ package com.murphy.dao.impl;
 
 import com.murphy.bean.Courier;
 import com.murphy.dao.BaseCourierDao;
-import com.murphy.exception.DuplicateCodeException;
 import com.murphy.util.DruidUtil;
 
 import java.sql.*;
