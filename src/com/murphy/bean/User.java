@@ -17,6 +17,15 @@ public class User {
     private String idNumber;
     private Timestamp uinTime;
     private Timestamp lastLogin;
+    private boolean user;
+
+    public boolean isUser() {
+        return user;
+    }
+
+    public void setUser(boolean user) {
+        this.user = user;
+    }
 
     public User(Integer uId, String uName, String uPhone, String password, String idNumber, Timestamp uinTime, Timestamp lastLogin) {
         this.uId = uId;
