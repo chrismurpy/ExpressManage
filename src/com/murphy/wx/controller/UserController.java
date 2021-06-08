@@ -1,4 +1,4 @@
-package com.murphy.wx;
+package com.murphy.wx.controller;
 
 import com.murphy.bean.Courier;
 import com.murphy.bean.Message;
@@ -21,6 +21,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class UserController {
 
+    /**
+     * 模拟短信发送
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/wx/loginSms.do")
     public String sendSms(HttpServletRequest request, HttpServletResponse response){
         String userPhone = request.getParameter("userPhone");
@@ -39,6 +45,12 @@ public class UserController {
         return json;
     }
 
+    /**
+     * 微信端用户/快递员登录
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/wx/login.do")
     public String login(HttpServletRequest request, HttpServletResponse response){
         String userPhone = request.getParameter("userPhone");
@@ -74,6 +86,12 @@ public class UserController {
         return json;
     }
 
+    /**
+     * 用户/快递员 主页面展示
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/wx/userInfo.do")
     public String userInfo(HttpServletRequest request, HttpServletResponse response) {
         User user = UserUtil.getWxUser(request.getSession());

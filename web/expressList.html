@@ -1,109 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<style type="text/css">
-	body{
-		margin: 0;
-		padding: 0;
-		background-color: #eeeeee;
-		font-family: "楷体";
-	}
-	.item{
-		margin: 20px;
-		margin-bottom: 50px;
-	}
-	.imte_top{
-		text-align: center;
-	}
-	.imte_top>span{
-		font-size:14px;
-		display: inline-block;
-		padding: 5px 12px;
-		background-color: #ddd;
-		color:#fff;
-		border-radius: 5px;
-	}
-	.item_content{
-		background-color: #fff;
-		padding: 25px 15px;
-		margin-top: 6px;
-	}
-	.item_content_top_1{
-		font-size: 24px;
-		font-weight: bold;
-	}
-	.item_content_top_2{
-		color:#eee;
-		font-size: 14px;
-		margin: 5px 0px;
-	}
-	.item_content_top_3{
-		margin: 10px 0px;
-	}
-	.item_content_top_4{
-		margin: 10px 0px;
-	}
-	.item_content_bottom>a{
-		text-decoration: none;
-		color:#33e;
-	}
-</style>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #eeeeee;
+            font-family: "楷体";
+        }
+
+        .item {
+            margin: 20px;
+            margin-bottom: 50px;
+        }
+
+        .imte_top {
+            text-align: center;
+        }
+
+        .imte_top > span {
+            font-size: 14px;
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #ddd;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .item_content {
+            background-color: #fff;
+            padding: 25px 15px;
+            margin-top: 6px;
+        }
+
+        .item_content_top_1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .item_content_top_2 {
+            color: #eee;
+            font-size: 14px;
+            margin: 5px 0px;
+        }
+
+        .item_content_top_3 {
+            margin: 10px 0px;
+        }
+
+        .item_content_top_4 {
+            margin: 10px 0px;
+        }
+
+        .item_content_bottom > a {
+            text-decoration: none;
+            color: #33e;
+        }
+    </style>
 </head>
 <body>
-	
-	<div class="content">
-		
-				
-		<div class="item">
-			<div class="imte_top"><span>2019-10-12 12:00</span></div>
-			<div class="item_content">
-				<div class="item_content_top">
-					<div class="item_content_top_1">取件通知</div>
-					<div class="item_content_top_2">2019-10-12 12:00</div>
-					<div class="item_content_top_3">您有一个包裹到e栈了!</div>
-					<div class="item_content_top_4">
-						取件码:<span style="color:#05a">123123</span><br>
-						快递公司:顺丰快递<br>
-						运单号码:123123123213<br>
-						站点电话:13843838438<br>
-						取件地址:学校快件集散中心<br>
-					</div>
-				</div>
-				<hr>
-				<div class="item_content_bottom">
-					<a href="personQRcode.jsp?code=<%=e.getCode()%>">二维码</a>
-				</div>
-			</div>
-		</div>
-		
-	</div>
-	<div class="content">
-		
-				
-		<div class="item">
-			<div class="imte_top"><span>2019-10-12 12:00</span></div>
-			<div class="item_content">
-				<div class="item_content_top">
-					<div class="item_content_top_1">取件成功通知</div>
-					<div class="item_content_top_2">2019-10-12 12:00</div>
-					<div class="item_content_top_3">您有一个包裹从e栈取出了!</div>
-					<div class="item_content_top_4">
-						快递公司:顺丰快递<br>
-						运单号码:12313431123<br>
-						站点电话:13843838438<br>
-					</div>
-				</div>
-				<hr>
-				<div class="item_content_bottom">
-					<a href="#">有疑问 ? 点了也没用</a>
-				</div>
-			</div>
-		</div>
-		
-			
-	</div>
+
+<div class="content">
+    <div class="item" id="status0Content">
+
+    </div>
+</div>
+
+<div class="content">
+    <div class="item" id="status1Content">
+
+    </div>
+</div>
+
 </body>
+<script src="qrcode/jquery2.1.4.js"></script>
+<script src="layer/layer.js"></script>
+<script>
+    $(function (){
+       $.getJSON("/wx/findExpressByuPhone.do",null,function (data){
+           // {"status":0,"data":{"status0":[{"id":3,"number":"JD134134","username":"murphy","userPhone":"15805703033","company":"京东快递","code":"823712","inTime":"2021-06-04 00:49:18","outTime":"未出库","status":"待取件","sysPhone":"18888888888"}
+           var data0 = data.data.status0;
+           for (i=0; i<data0.length; i++) {
+               var item = "<div class=\"item\">\n" +
+                   "        <div class=\"imte_top\"><span>"+data0[i].inTime+"</span></div>\n" +
+                   "        <div class=\"item_content\">\n" +
+                   "            <div class=\"item_content_top\">\n" +
+                   "                <div class=\"item_content_top_1\">取件通知</div>\n" +
+                   "                <div class=\"item_content_top_2\">"+data0[i].inTime+"</div>\n" +
+                   "                <div class=\"item_content_top_3\">您有一个包裹到e栈了!</div>\n" +
+                   "                <div class=\"item_content_top_4\">\n" +
+                   "                    取件码:<span style=\"color:#05a\">"+data0[i].code+"</span><br>\n" +
+                   "                    快递公司:"+data0[i].company+"<br>\n" +
+                   "                    运单号码:"+data0[i].number+"<br>\n" +
+                   "                    站点电话:"+data0[i].sysPhone+"<br>\n" +
+                   "                </div>\n" +
+                   "            </div>\n" +
+                   "            <hr>\n" +
+                   "            <div class=\"item_content_bottom\">\n" +
+                   "                <a href=\"qrcode.do?code="+data0[i].code+"\">二维码</a>\n" +
+                   "            </div>\n" +
+                   "        </div>\n" +
+                   "    </div>";
+               $("#status0Content").append($(item));
+           }
+           // {"status1":[{"id":2,"number":"JD123123","username":"murphy","userPhone":"15805703033","company":"京东快递","code":"已取件","inTime":"2021-06-05 00:48:37","outTime":"2021-06-05 11:24:08","status":"已取件","sysPhone":"18888888888"}
+           var data1 = data.data.status1;
+           for (i=0; i<data1.length; i++) {
+               var item = "<div class=\"item\" id=\"status1Content\">\n" +
+                   "        <div class=\"imte_top\"><span>"+data1[i].outTime+"</span></div>\n" +
+                   "        <div class=\"item_content\">\n" +
+                   "            <div class=\"item_content_top\">\n" +
+                   "                <div class=\"item_content_top_1\">取件成功通知</div>\n" +
+                   "                <div class=\"item_content_top_2\">"+data1[i].outTime+"</div>\n" +
+                   "                <div class=\"item_content_top_3\">您有一个包裹从e栈取出了!</div>\n" +
+                   "                <div class=\"item_content_top_4\">\n" +
+                   "                    快递公司:"+data1[i].company+"<br>\n" +
+                   "                    运单号码:"+data1[i].number+"<br>\n" +
+                   "                    站点电话:"+data1[i].sysPhone+"<br>\n" +
+                   "                </div>\n" +
+                   "            </div>\n" +
+                   "            <hr>\n" +
+                   "            <div class=\"item_content_bottom\">\n" +
+                   "                <a href=\"#\">有疑问 ? 点了也没用</a>\n" +
+                   "            </div>\n" +
+                   "        </div>\n" +
+                   "    </div>";
+               $("#status1Content").append($(item));
+           }
+       });
+    });
+</script>
 </html>
