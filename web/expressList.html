@@ -80,9 +80,9 @@
 <script src="layer/layer.js"></script>
 <script>
     $(function (){
-       $.getJSON("/wx/findExpressByuPhone.do",null,function (data){
+       $.getJSON("/wx/findExpressByuPhone.do",null,function (result){
            // {"status":0,"data":{"status0":[{"id":3,"number":"JD134134","username":"murphy","userPhone":"15805703033","company":"京东快递","code":"823712","inTime":"2021-06-04 00:49:18","outTime":"未出库","status":"待取件","sysPhone":"18888888888"}
-           var data0 = data.data.status0;
+           var data0 = result.data.status0;
            for (i=0; i<data0.length; i++) {
                var item = "<div class=\"item\">\n" +
                    "        <div class=\"imte_top\"><span>"+data0[i].inTime+"</span></div>\n" +
@@ -100,14 +100,14 @@
                    "            </div>\n" +
                    "            <hr>\n" +
                    "            <div class=\"item_content_bottom\">\n" +
-                   "                <a href=\"qrcode.do?code="+data0[i].code+"\">二维码</a>\n" +
+                   "                <a href=\"/wx/createQRCode.do?type=express&code="+data0[i].code+"\">二维码</a>\n" +
                    "            </div>\n" +
                    "        </div>\n" +
                    "    </div>";
                $("#status0Content").append($(item));
            }
            // {"status1":[{"id":2,"number":"JD123123","username":"murphy","userPhone":"15805703033","company":"京东快递","code":"已取件","inTime":"2021-06-05 00:48:37","outTime":"2021-06-05 11:24:08","status":"已取件","sysPhone":"18888888888"}
-           var data1 = data.data.status1;
+           var data1 = result.data.status1;
            for (i=0; i<data1.length; i++) {
                var item = "<div class=\"item\" id=\"status1Content\">\n" +
                    "        <div class=\"imte_top\"><span>"+data1[i].outTime+"</span></div>\n" +

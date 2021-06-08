@@ -9,6 +9,7 @@
 	<script src="js/jquery.min.js" type="text/javascript"></script>
 	<script src="js/qrcode.min.js" type="text/javascript"></script>
 	<script src="js/common.js" type="text/javascript"></script>
+	<script src="layer/layer.js"></script>
 	<style type="text/css">
 			body{
 			background: #f4f4f4;
@@ -203,8 +204,12 @@
 			//alert(textdata);
 			//alert(qrcodeWH);
 		};
-
-		setQRcode("kjyz:666666");
+		$.getJSON("/wx/qrcode.do",null,function (result){
+			if (result.status == -1) {
+				layer.msg("二维码内容有误");
+			}
+			setQRcode(result.result);
+		});
 
 		$(".refresh").click(function(){
 			//qrcode.clear();
