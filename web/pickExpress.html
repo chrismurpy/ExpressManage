@@ -11,6 +11,7 @@
 	<script src="js/notice.js" type="text/javascript"></script>
 	<script src="js/regexp.js" type="text/javascript"></script>
 	<script src="js/jweixin-1.2.0.js" type="text/javascript"></script>
+	<script src="layer/layer.js"></script>
 	<script type="text/javascript">
 	$.ajax({
 		url:"wxconf.do",
@@ -19,7 +20,7 @@
 		success:function(data){
 				//data = JSON.parse(data);
 			wx.config({
-			    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+			    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
 			    appId: data.appid, // 必填，公众号的唯一标识
 			    timestamp: data.timestamp, // 必填，生成签名的时间戳
 			    nonceStr: data.nonceStr, // 必填，生成签名的随机串
@@ -40,17 +41,108 @@
 	    // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
 	    alert("扫描错误")
 	});
-	
+
+	var userPhone = null;
 	function x1(){
 		wx.scanQRCode({
 				needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
 				scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
 				success: function (res) {
 					var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-					$("#expPickUserId").val(result);
+					var code = null;
+					if (result.indexOf("express_") == 0) {
+						// 扫描到的是一个快递的取件码，按照取件码的方式查询
+						code = result.substring(8);
+						$("#expPickUserId").val(code);
+					} else if (result.indexOf("userPhone_") == 0) {
+						userPhone = result.substring(10);
+						getExpress();
+					}
 				}
 			});
 	}
+	function getExpress(){
+		var windowId = layer.load();
+		$.getJSON("/wx/userExpressList.do",{userPhone: userPhone},function(result){
+			if (result.status == -1) {
+				layer.msg("用户暂无快递",function (){});
+			} else {
+				var list = result.data;
+				for (var i=0; i<list.length; i++){
+					var item = "<div class=\"expInfoCont status1\">\n" +
+							"\t\t\t<table>\n" +
+							"\t\t\t\t<tr>\n" +
+							"\t\t\t\t\t<td>快递公司：</td><td>" + list[i].company + "</td>\n" +
+							"\t\t\t\t</tr>\n" +
+							"\t\t\t\t<tr>\n" +
+							"\t\t\t\t\t<td>快递单号：</td><td>" + list[i].number + "</td>\n" +
+							"\t\t\t\t</tr>\n" +
+							"\t\t\t\t<tr>\n" +
+							"\t\t\t\t\t<td>到件时间：</td><td>" + list[i].inTime + "</td>\n" +
+							"\t\t\t\t</tr>\n" +
+							"\t\t\t\t<tr>\n" +
+							"\t\t\t\t\t<td>取件码：</td><td>" + list[i].code + "</td>\n" +
+							"\t\t\t\t</tr>\n" +
+							"\t\t\t</table>\n" +
+							"\t\t\t<div class=\"btns\">\n" +
+							"\t\t\t\t<button class=\"btn-success\" " +
+							"onclick=\"updateStatus('" + list[i].code + "',0)\">确认收货</button>\n" +
+							"\t\t\t</div>\n" +
+							"\t\t</div>";
+					$("#expUserInfoContent").append($(item));
+				}
+				layer.close(windowId);
+			}
+		});
+	}
+	// 根据取件码确认收获
+	function updateStatus(code,type) {
+		// alert("点击的取件码是：" + code);
+		var windowId = layer.load();
+		$.getJSON("/wx/updateStatus.do", {code: code}, function (result) {
+			layer.msg(result.result);
+			$("#expUserInfoContent").html("");
+			layer.close(windowId);
+			if (type == 0) {
+				getExpress();
+			}
+		});
+	}
+	// 查找单个快递信息
+	function find(){
+		var windowId = layer.load();
+		var code = $("#expPickUserId").val();
+		$.getJSON("/wx/findExpressByCode.do", {code: code}, function (result){
+			layer.close(windowId);
+			layer.msg(result.result);
+			if (result.status == 0) {
+				$("#expUserInfoContent").html("");
+				var express = result.data;
+				var item = "<div class=\"expInfoCont status1\">\n" +
+						"\t\t\t<table>\n" +
+						"\t\t\t\t<tr>\n" +
+						"\t\t\t\t\t<td>快递公司：</td><td>" + express.company + "</td>\n" +
+						"\t\t\t\t</tr>\n" +
+						"\t\t\t\t<tr>\n" +
+						"\t\t\t\t\t<td>快递单号：</td><td>" + express.number + "</td>\n" +
+						"\t\t\t\t</tr>\n" +
+						"\t\t\t\t<tr>\n" +
+						"\t\t\t\t\t<td>到件时间：</td><td>" + express.inTime + "</td>\n" +
+						"\t\t\t\t</tr>\n" +
+						"\t\t\t\t<tr>\n" +
+						"\t\t\t\t\t<td>取件码：</td><td>" + express.code + "</td>\n" +
+						"\t\t\t\t</tr>\n" +
+						"\t\t\t</table>\n" +
+						"\t\t\t<div class=\"btns\">\n" +
+						"\t\t\t\t<button class=\"btn-success\" " +
+						"onclick=\"updateStatus('" + express.code + "',1)\">确认收货</button>\n" +
+						"\t\t\t</div>\n" +
+						"\t\t</div>";
+				$("#expUserInfoContent").append($(item));
+			}
+		});
+	}
+
 	</script>
 	<style type="text/css">
 		.expPickCont{
@@ -174,50 +266,13 @@
 					</div>
 				</div>
 			</form>
-			<div class="searchInfoBtn">查找信息</div>
+			<div class="searchInfoBtn" id="searchInfoBtn" onclick="find()">查找信息</div>
 		</div>
 	</div>
 
-	<div class="expUserInfoCont"> 
+	<div class="expUserInfoCont" id="expUserInfoContent">
 		<div class="expUserInfoNull">
 			暂无查到相关信息
-		</div>
-		<div class="expInfoCont status1">
-			<table>
-				<tr>
-					<td>快递公司：</td><td>顺丰快递</td>
-				</tr>
-				<tr>
-					<td>快递单号：</td><td>123456789456789</td>
-				</tr>
-				<tr>
-					<td>到件时间：</td><td>2019-10-14 22:00</td>
-				</tr>
-				<tr>
-					<td>取件码：</td><td>666666</td>
-				</tr>
-			</table>
-			<div class="btns">
-				<button class="btn-success">确认收货</button>
-			</div>
-		</div>
-		
-		<div class="expInfoCont status2">
-			<table>
-				<tr>
-					<td>快递公司：</td><td>顺丰快递</td>
-				</tr>
-				<tr>
-					<td>快递单号：</td><td>123456789456789</td>
-				</tr>
-				<tr>
-					<td>到件时间：</td><td>2019-10-14 22:00</td>
-				</tr>
-				<tr>
-					<td>取件时间：</td><td>2019-10-15 12:00</td>
-				</tr>
-			</table>
-			<div class="status2_bg"><img src="images/status2_bg.png"></div>
 		</div>
 	</div>
 

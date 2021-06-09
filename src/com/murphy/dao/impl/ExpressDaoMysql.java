@@ -52,6 +52,10 @@ public class ExpressDaoMysql implements BaseExpressDao {
      */
     private static final String SQL_FIND_BY_USERPHONE = "SELECT * FROM EXPRESS WHERE USERPHONE = ?";
     /**
+     * 通过手机号查询未取件快递
+     */
+    private static final String SQL_FIND_BY_USERPHONE_STATUS = "SELECT * FROM EXPRESS WHERE USERPHONE = ? AND STATUS = ?";
+    /**
      * 录入快递
      */
     private static final String SQL_INSERT = "INSERT INTO EXPRESS " +
@@ -283,6 +287,50 @@ public class ExpressDaoMysql implements BaseExpressDao {
                 Timestamp inTime = result.getTimestamp("intime");
                 Timestamp outTime = result.getTimestamp("outtime");
                 Integer status = result.getInt("status");
+                String sysPhone = result.getString("sysphone");
+                Express e = new Express(id,number,username,userPhone,company,code,inTime,outTime,status,sysPhone);
+                list.add(e);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            // 6. 资源的释放
+            DruidUtil.close(conn,state,result);
+        }
+
+        return list;
+    }
+
+    /**
+     * 根据用户手机号码/快递状态，查询其所有的未取件快递信息
+     *
+     * @param userPhone 手机号码
+     * @return 查询的快递信息列表
+     */
+    @Override
+    public List<Express> findByUserPhoneAndStatus(String userPhone, int status) {
+        ArrayList<Express> list = new ArrayList<>();
+        // 1. 获取数据库的连接
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        ResultSet result = null;
+        // 2. 预编译SQL语句
+        try {
+            state = conn.prepareStatement(SQL_FIND_BY_USERPHONE_STATUS);
+            // 3. 填充参数(填充)
+            state.setString(1,userPhone);
+            state.setInt(2,status);
+            // 4. 执行SQL语句
+            result = state.executeQuery();
+            // 5. 获取执行的结果
+            while (result.next()) {
+                Integer id = result.getInt("id");
+                String number = result.getString("number");
+                String username = result.getString("username");
+                String company = result.getString("company");
+                String code = result.getString("code");
+                Timestamp inTime = result.getTimestamp("intime");
+                Timestamp outTime = result.getTimestamp("outtime");
                 String sysPhone = result.getString("sysphone");
                 Express e = new Express(id,number,username,userPhone,company,code,inTime,outTime,status,sysPhone);
                 list.add(e);

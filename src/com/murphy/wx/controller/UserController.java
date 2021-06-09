@@ -70,10 +70,12 @@ public class UserController {
                 // 快递员
                 msg.setStatus(1);
                 user.setUser(false);
+                msg.setResult("登录成功");
             } else {
                 // 用户
                 msg.setStatus(0);
                 user.setUser(true);
+                msg.setResult("登录成功");
             }
             user.setuPhone(userPhone);
             UserUtil.setWxUser(request.getSession(), user);

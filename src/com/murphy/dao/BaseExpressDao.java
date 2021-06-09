@@ -49,6 +49,14 @@ public interface BaseExpressDao {
     List<Express> findByUserPhone(String userPhone);
 
     /**
+     * 根据用户手机号码/快递状态，查询其所有的未取件快递信息
+     * @param userPhone 手机号码
+     * @param status 状态码
+     * @return 查询的快递信息列表
+     */
+    List<Express> findByUserPhoneAndStatus(String userPhone, int status);
+
+    /**
      * 根据录入人手机号码，查询录入的所有记录
      * @param sysPhone 录入人手机号码
      * @return 查询的快递信息列表

@@ -74,8 +74,8 @@ public class ExpressController {
                     return false;
                 }
             }).sorted((o1, o2) -> {
-                long o1Time = DateFormatUtil.toTime(o1.getInTime());
-                long o2Time = DateFormatUtil.toTime(o2.getInTime());
+                long o1Time = DateFormatUtil.toTime(o1.getOutTime());
+                long o2Time = DateFormatUtil.toTime(o2.getOutTime());
                 return (int) (o1Time - o2Time);
             });
             Object[] s0 = status0Express.toArray();
@@ -85,6 +85,40 @@ public class ExpressController {
             data.put("status1",s1);
 
             msg.setData(data);
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 快递员端扫用户二维码获取快件信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/userExpressList.do")
+    public String expressList(HttpServletRequest request, HttpServletResponse response) {
+        String userPhone = request.getParameter("userPhone");
+        List<Express> list = ExpressService.findByUserPhoneAndStatus(userPhone, 0);
+        List<BootStrapTableExpress> list2 = new ArrayList<>();
+        for (Express e : list) {
+            String inTime = DateFormatUtil.format(e.getInTime());
+            String outTime = e.getOutTime() == null ? "未出库" : DateFormatUtil.format(e.getOutTime());
+            String status = e.getStatus() == 0 ? "待取件" : "已取件";
+            String code = e.getCode() == null ? "已取件" : e.getCode();
+            BootStrapTableExpress e2 = new BootStrapTableExpress(e.getId(),e.getNumber(),e.getUsername(),
+                    e.getUserPhone(),e.getCompany(),code,inTime,outTime,status,e.getSysPhone());
+            list2.add(e2);
+        }
+
+        Message msg = new Message();
+        if (list.size() == 0) {
+            msg.setStatus(-1);
+            msg.setResult("未查询到快递");
+        } else {
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+            msg.setData(list2);
         }
         String json = JSONUtil.toJSON(msg);
         return json;
