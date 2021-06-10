@@ -27,6 +27,20 @@ public class ExpressDaoMysql implements BaseExpressDao {
             "COUNT(STATUS=0 OR NULL) DATA2_SIZE," +
             "COUNT(TO_DAYS(INTIME)=TO_DAYS(NOW()) AND STATUS=0 OR NULL) DATA2_DAY" +
             " FROM EXPRESS";
+
+    /**
+     * 用于查询源于某发货地的快递总数
+     */
+    private static final String SQL_DEPARTURE = "SELECT " +
+            "departure Area1, COUNT(1) Size1 " +
+            "FROM Express GROUP BY Area1 ORDER BY Size1 DESC";
+
+    /**
+     * 用于查询源于某收货地的快递总数
+     */
+    private static final String SQL_DESTINATION = "SELECT " +
+            "destination Area2, COUNT(1) Size2 " +
+            "FROM Express GROUP BY Area2 ORDER BY Size2 DESC";
     /**
      * 用于查询所有快递信息
      */
@@ -116,6 +130,40 @@ public class ExpressDaoMysql implements BaseExpressDao {
             DruidUtil.close(conn,state,result);
         }
 
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Integer>> areaAll() {
+        ArrayList<Map<String, Integer>> list = new ArrayList<>();
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        ResultSet result = null;
+        try {
+            state = conn.prepareStatement(SQL_DEPARTURE);
+            result = state.executeQuery();
+            while (result.next()) {
+                Map<String, Integer> map = new HashMap();
+                String name = result.getString(1);
+                Integer value = result.getInt(2);
+                map.put(name, value);
+                list.add(map);
+            }
+
+            state = conn.prepareStatement(SQL_DESTINATION);
+            result = state.executeQuery();
+            while (result.next()) {
+                Map<String, Integer> map = new HashMap();
+                String name = result.getString(1);
+                Integer value = result.getInt(2);
+                map.put(name, value);
+                list.add(map);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            DruidUtil.close(conn,state,result);
+        }
         return list;
     }
 

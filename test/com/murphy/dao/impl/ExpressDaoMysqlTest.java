@@ -5,6 +5,7 @@ import com.murphy.dao.BaseExpressDao;
 import com.murphy.exception.DuplicateCodeException;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,5 +99,16 @@ public class ExpressDaoMysqlTest {
     public void delete() {
         boolean flag = dao.delete(4);
         System.out.println(flag);
+    }
+
+    @Test
+    public void areaAll() {
+        List<Map<String, Integer>> list = dao.areaAll();
+        for (int i=0; i<list.size(); i++) {
+            System.out.print(list.get(i).keySet() + " ");
+            System.out.print(list.get(i).values());
+            System.out.println();
+        }
+        System.out.println(list);
     }
 }

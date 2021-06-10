@@ -21,6 +21,15 @@ public class Express {
     private Integer status;
     private String sysPhone;
 
+    /**
+     * 发货地
+     */
+    private String departure;
+    /**
+     * 收货地
+     */
+    private String destination;
+
     public Express(Integer id, String number, String username, String userPhone, String company, String code, Timestamp inTime, Timestamp outTime, Integer status, String sysPhone) {
         this.id = id;
         this.number = number;
@@ -34,12 +43,39 @@ public class Express {
         this.sysPhone = sysPhone;
     }
 
+    public Express(Integer id, String number, String username, String userPhone, String company, String code, Timestamp inTime, Timestamp outTime, Integer status, String sysPhone, String departure, String destination) {
+        this.id = id;
+        this.number = number;
+        this.username = username;
+        this.userPhone = userPhone;
+        this.company = company;
+        this.code = code;
+        this.inTime = inTime;
+        this.outTime = outTime;
+        this.status = status;
+        this.sysPhone = sysPhone;
+        this.departure = departure;
+        this.destination = destination;
+    }
+
     public Express(String number, String username, String userPhone, String company, String sysPhone) {
         this.number = number;
         this.username = username;
         this.userPhone = userPhone;
         this.company = company;
         this.sysPhone = sysPhone;
+    }
+
+    public Express(String number, String username, String userPhone, String company, String sysPhone, String code) {
+        this.number = number;
+        this.username = username;
+        this.userPhone = userPhone;
+        this.company = company;
+        this.sysPhone = sysPhone;
+        this.code = code;
+    }
+
+    public Express() {
     }
 
     @Override
@@ -60,24 +96,30 @@ public class Express {
                 Objects.equals(inTime, express.inTime) &&
                 Objects.equals(outTime, express.outTime) &&
                 Objects.equals(status, express.status) &&
-                Objects.equals(sysPhone, express.sysPhone);
+                Objects.equals(sysPhone, express.sysPhone) &&
+                Objects.equals(departure, express.departure) &&
+                Objects.equals(destination, express.destination);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, number, username, userPhone, company, code, inTime, outTime, status, sysPhone);
+        return Objects.hash(id, number, username, userPhone, company, code, inTime, outTime, status, sysPhone, departure , destination);
     }
 
-    public Express(String number, String username, String userPhone, String company, String sysPhone, String code) {
-        this.number = number;
-        this.username = username;
-        this.userPhone = userPhone;
-        this.company = company;
-        this.sysPhone = sysPhone;
-        this.code = code;
+    public String getDeparture() {
+        return departure;
     }
 
-    public Express() {
+    public void setDeparture(String departure) {
+        this.departure = departure;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     @Override
@@ -93,6 +135,8 @@ public class Express {
                 ", outTime=" + outTime +
                 ", status=" + status +
                 ", sysPhone='" + sysPhone + '\'' +
+                ", departure='" + departure + '\'' +
+                ", destination='" + destination + '\'' +
                 '}';
     }
 

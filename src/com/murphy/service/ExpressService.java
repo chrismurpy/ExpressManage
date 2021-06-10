@@ -29,6 +29,15 @@ public class ExpressService {
     }
 
     /**
+     * 用于查询源于某地的快递总数
+     *
+     * @return [{area: 地区, size: 数量}]
+     */
+    public static List<Map<String, Integer>> areaAll() {
+        return dao.areaAll();
+    }
+
+    /**
      * 用于查询所有快递
      *
      * @param limit      是否分页的标记 - true表示分页 / false表示查询所有快递

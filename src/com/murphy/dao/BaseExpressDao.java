@@ -91,4 +91,10 @@ public interface BaseExpressDao {
      * @return 删除的结果 - true表示成功 / false表示失败
      */
     boolean delete(int id);
+
+    /**
+     * 用于查询源于某地的快递总数
+     * @return [{area: 地区, size: 数量}]
+     */
+    List<Map<String, Integer>> areaAll();
 }

@@ -1,9 +1,6 @@
 package com.murphy.controller;
 
-import com.murphy.bean.BootStrapTableExpress;
-import com.murphy.bean.Express;
-import com.murphy.bean.Message;
-import com.murphy.bean.ResultData;
+import com.murphy.bean.*;
 import com.murphy.mvc.ResponseBody;
 import com.murphy.service.ExpressService;
 import com.murphy.util.DateFormatUtil;
@@ -32,6 +29,26 @@ public class ExpressController {
     @ResponseBody("/express/console.do")
     public String console(HttpServletRequest request, HttpServletResponse response){
         List<Map<String, Integer>> data = ExpressService.console();
+        Message msg = new Message();
+        if (data.size() == 0) {
+            msg.setStatus(-1);
+        } else {
+            msg.setStatus(0);
+        }
+        msg.setData(data);
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 某地快递总件数
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/express/map.do")
+    public String areaAll(HttpServletRequest request, HttpServletResponse response) {
+        List<Map<String, Integer>> data = ExpressService.areaAll();
         Message msg = new Message();
         if (data.size() == 0) {
             msg.setStatus(-1);
