@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我的快件</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #eeeeee;
+            font-family: "楷体";
+        }
+
+        .item {
+            margin: 20px;
+            margin-bottom: 50px;
+        }
+
+        .imte_top {
+            text-align: center;
+        }
+
+        .imte_top > span {
+            font-size: 14px;
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #ddd;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .item_content {
+            background-color: #fff;
+            padding: 25px 15px;
+            margin-top: 6px;
+        }
+
+        .item_content_top_1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .item_content_top_2 {
+            color: #eee;
+            font-size: 14px;
+            margin: 5px 0px;
+        }
+
+        .item_content_top_3 {
+            margin: 10px 0px;
+        }
+
+        .item_content_top_4 {
+            margin: 10px 0px;
+        }
+
+        .item_content_bottom > a {
+            text-decoration: none;
+            color: #33e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content">
+    <div class="item" id="status0Content">
+
+    </div>
+</div>
+
+<div class="content">
+    <div class="item" id="status1Content">
+
+    </div>
+</div>
+
+</body>
+<script src="qrcode/jquery2.1.4.js"></script>
+<script src="layer/layer.js"></script>
+<script>
+    $(function () {
+        $.getJSON("/wx/getExpressInfo.do", null, function (result) {
+            if (result.data == null) {
+                alert("无法查找到快递信息");
+            } else {
+                // {"status":0,"result":"查询成功","data":{"id":12,"number":"ST524999","username":"Qianzai","userPhone":"18723810291","company":"申通快递","code":"879876","inTime":"2021-06-04 16:54:06","outTime":"未出库","status":"待取件","sysPhone":"18888889999"}}
+                var e = result.data;
+                console.log(e);
+                if (e.status == "待取件") {
+                    var item = "<div class=\"item\">\n" +
+                        "        <div class=\"imte_top\"><span>" + e.inTime + "</span></div>\n" +
+                        "        <div class=\"item_content\">\n" +
+                        "            <div class=\"item_content_top\">\n" +
+                        "                <div class=\"item_content_top_1\">取件通知</div>\n" +
+                        "                <div class=\"item_content_top_2\">" + e.inTime + "</div>\n" +
+                        "                <div class=\"item_content_top_3\">您有一个包裹到e栈了!</div>\n" +
+                        "                <div class=\"item_content_top_4\">\n" +
+                        "                    取件码:<span style=\"color:#05a\">" + e.code + "</span><br>\n" +
+                        "                    快递公司:" + e.company + "<br>\n" +
+                        "                    运单号码:" + e.number + "<br>\n" +
+                        "                    站点电话:" + e.sysPhone + "<br>\n" +
+                        "                </div>\n" +
+                        "            </div>\n" +
+                        "            <hr>\n" +
+                        "            <div class=\"item_content_bottom\">\n" +
+                        "                <a href=\"/wx/createQRCode.do?type=express&code=" + e.code + "\">二维码</a>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </div>";
+                    $("#status0Content").append($(item));
+                } else {
+                    var item = "<div class=\"item\" id=\"status1Content\">\n" +
+                        "        <div class=\"imte_top\"><span>" + e.outTime + "</span></div>\n" +
+                        "        <div class=\"item_content\">\n" +
+                        "            <div class=\"item_content_top\">\n" +
+                        "                <div class=\"item_content_top_1\">取件成功通知</div>\n" +
+                        "                <div class=\"item_content_top_2\">" + e.outTime + "</div>\n" +
+                        "                <div class=\"item_content_top_3\">您有一个包裹从e栈取出了!</div>\n" +
+                        "                <div class=\"item_content_top_4\">\n" +
+                        "                    快递公司:" + e.company + "<br>\n" +
+                        "                    运单号码:" + e.number + "<br>\n" +
+                        "                    站点电话:" + e.sysPhone + "<br>\n" +
+                        "                </div>\n" +
+                        "            </div>\n" +
+                        "            <hr>\n" +
+                        "            <div class=\"item_content_bottom\">\n" +
+                        "                <a href=\"#\">有疑问 ? 点了也没用</a>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </div>";
+                    $("#status1Content").append($(item));
+                }
+            }
+        });
+    });
+</script>
+</html>

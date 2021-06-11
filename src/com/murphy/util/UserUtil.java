@@ -1,5 +1,6 @@
 package com.murphy.util;
 
+import com.murphy.bean.Courier;
 import com.murphy.bean.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +38,12 @@ public class UserUtil {
         session.setAttribute("wxUser",user);
     }
 
-    public static User getWxUser(HttpSession session){
-        return (User) session.getAttribute("wxUser");
+    public static void setWxUser(HttpSession session, Courier courier){
+        session.setAttribute("wxUser",courier);
     }
+
+    public static Object getWxUser(HttpSession session){
+        return session.getAttribute("wxUser");
+    }
+
 }

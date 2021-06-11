@@ -1,9 +1,6 @@
 package com.murphy.wx.controller;
 
-import com.murphy.bean.BootStrapTableExpress;
-import com.murphy.bean.Express;
-import com.murphy.bean.Message;
-import com.murphy.bean.User;
+import com.murphy.bean.*;
 import com.murphy.mvc.ResponseBody;
 import com.murphy.service.ExpressService;
 import com.murphy.util.DateFormatUtil;
@@ -12,6 +9,7 @@ import com.murphy.util.UserUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +32,13 @@ public class ExpressController {
      */
     @ResponseBody("/wx/findExpressByuPhone.do")
     public String findByuPhone(HttpServletRequest request, HttpServletResponse response) {
-        User wxUser = UserUtil.getWxUser(request.getSession());
-        String uPhone = wxUser.getuPhone();
+        Object wxUser = UserUtil.getWxUser(request.getSession());
+        String uPhone = "";
+        if (wxUser instanceof User) {
+            uPhone = ((User) wxUser).getuPhone();
+        } else if (wxUser instanceof Courier) {
+            uPhone = ((Courier) wxUser).getcPhone();
+        }
         List<Express> list = ExpressService.findByUserPhone(uPhone);
         List<BootStrapTableExpress> list2 = new ArrayList<>();
         for (Express e : list) {
@@ -119,6 +122,60 @@ public class ExpressController {
             msg.setStatus(0);
             msg.setResult("查询成功");
             msg.setData(list2);
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 根据订单 查找快递
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/findExpressByNumber.do")
+    public String findExpressByNumber(HttpServletRequest request, HttpServletResponse response) {
+        String number = request.getParameter("expressNum");
+        Express e = ExpressService.findByNumber(number);
+
+        Message msg = new Message();
+        if (e == null) {
+            msg.setStatus(-1);
+            msg.setResult("未查询到快递");
+        } else {
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+
+            HttpSession session = request.getSession();
+            session.setAttribute("searchExpress",e);
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 取信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/getExpressInfo.do")
+    public String getExpressInfo(HttpServletRequest request, HttpServletResponse response) {
+        Express e = (Express) request.getSession().getAttribute("searchExpress");
+        Message msg = new Message();
+        if (e != null) {
+            String inTime = DateFormatUtil.format(e.getInTime());
+            String outTime = e.getOutTime() == null ? "未出库" : DateFormatUtil.format(e.getOutTime());
+            String status = e.getStatus() == 0 ? "待取件" : "已取件";
+            String code = e.getCode() == null ? "已取件" : e.getCode();
+            BootStrapTableExpress e2 = new BootStrapTableExpress(e.getId(),e.getNumber(),e.getUsername(),
+                    e.getUserPhone(),e.getCompany(),code,inTime,outTime,status,e.getSysPhone());
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+            msg.setData(e2);
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("未查到相关信息");
         }
         String json = JSONUtil.toJSON(msg);
         return json;

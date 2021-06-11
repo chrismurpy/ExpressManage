@@ -5,13 +5,12 @@ import com.murphy.bean.Message;
 import com.murphy.bean.User;
 import com.murphy.mvc.ResponseBody;
 import com.murphy.service.CourierService;
-import com.murphy.util.JSONUtil;
-import com.murphy.util.RandomUtil;
-import com.murphy.util.SMSLogin;
-import com.murphy.util.UserUtil;
+import com.murphy.service.UserService;
+import com.murphy.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * 用户登录
@@ -63,22 +62,36 @@ public class UserController {
             msg.setResult("手机号码未获取短信");
         } else if (sysCode.equals(userCode)) {
             // 手机号与验证码一致 / 登录成功
+            User u = UserService.findByuPhone(userPhone);
             Courier c = CourierService.findBycPhone(userPhone);
-            User user = new User();
-            // 快递员表格查询手机号的结果
-            if (c != null) {
-                // 快递员
-                msg.setStatus(1);
-                user.setUser(false);
-                msg.setResult("登录成功");
-            } else {
-                // 用户
+            if (c == null && u == null) {
+                // 判断是快递员还是用户，如果都不是则默认注册为用户
                 msg.setStatus(0);
-                user.setUser(true);
+                User user = new User();
+                user.setuPhone(userPhone);
+                UserService.insert(user);
+                UserService.updateLoginTime(userPhone);
+                UserUtil.setWxUser(request.getSession(), user);
+                msg.setResult("注册成功");
+            } else if (c != null && u != null) {
+                // 判断是快递员还是用户，如果都是则默认登录为快递员
+                msg.setStatus(1);
+                CourierService.updateLoginTime(userPhone);
+                UserUtil.setWxUser(request.getSession(), c);
+                msg.setResult("登录成功");
+            } else if (c == null && u != null) {
+                // 用户登录
+                msg.setStatus(0);
+                UserService.updateLoginTime(userPhone);
+                UserUtil.setWxUser(request.getSession(), u);
+                msg.setResult("登录成功");
+            } else if (c != null && u == null) {
+                // 快递员登录
+                msg.setStatus(1);
+                CourierService.updateLoginTime(userPhone);
+                UserUtil.setWxUser(request.getSession(), c);
                 msg.setResult("登录成功");
             }
-            user.setuPhone(userPhone);
-            UserUtil.setWxUser(request.getSession(), user);
         } else {
             // 验证码不一致 / 登录失败
             msg.setStatus(-2);
@@ -96,20 +109,26 @@ public class UserController {
      */
     @ResponseBody("/wx/userInfo.do")
     public String userInfo(HttpServletRequest request, HttpServletResponse response) {
-        User user = UserUtil.getWxUser(request.getSession());
-        boolean isUser = user.isUser();
+        Object loginUser = UserUtil.getWxUser(request.getSession());
+        boolean isUser = loginUser instanceof User;
         Message msg = new Message();
         if (isUser){
             msg.setStatus(0);
+            msg.setResult(((User) loginUser).getuPhone());
         } else {
             msg.setStatus(1);
+            msg.setResult(((Courier) loginUser).getcPhone());
         }
-        msg.setResult(user.getuPhone());
         String json = JSONUtil.toJSON(msg);
         return json;
     }
 
-
+    /**
+     * 退出登录
+     * @param request
+     * @param response
+     * @return
+     */
     @ResponseBody("/wx/logout.do")
     public String logout(HttpServletRequest request, HttpServletResponse response){
         // 1. 销毁session

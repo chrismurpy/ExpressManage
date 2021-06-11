@@ -1,9 +1,6 @@
 package com.murphy.wx.controller;
 
-import com.murphy.bean.BootStrapTableExpress;
-import com.murphy.bean.Express;
-import com.murphy.bean.Message;
-import com.murphy.bean.User;
+import com.murphy.bean.*;
 import com.murphy.mvc.ResponseBody;
 import com.murphy.mvc.ResponseView;
 import com.murphy.service.ExpressService;
@@ -44,8 +41,12 @@ public class QRCodeController {
         } else {
             // 用户二维码：被扫后，柜子端展示用户所有快递
             // userPhone
-            User wxUser = UserUtil.getWxUser(request.getSession());
-            userPhone = wxUser.getuPhone();
+            Object wxUser = UserUtil.getWxUser(request.getSession());
+            if (wxUser instanceof User) {
+                userPhone = ((User) wxUser).getuPhone();
+            } else {
+                userPhone = ((Courier) wxUser).getcPhone();
+            }
             qrCodeContent = "userPhone_" + userPhone;
         }
         HttpSession session = request.getSession();

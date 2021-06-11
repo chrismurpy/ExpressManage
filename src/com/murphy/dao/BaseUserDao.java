@@ -2,6 +2,7 @@ package com.murphy.dao;
 
 import com.murphy.bean.User;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -62,4 +63,10 @@ public interface BaseUserDao {
      * @return 删除的结果 - true / false
      */
     boolean delete(int uId);
+
+    /**
+     * 根据手机号，更新登录时间
+     * @param uPhone
+     */
+    void updateLoginTime(String uPhone);
 }

@@ -3,6 +3,7 @@ package com.murphy.dao;
 import com.murphy.bean.Courier;
 import com.murphy.exception.DuplicateCodeException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -63,4 +64,10 @@ public interface BaseCourierDao {
      * @return 删除的结果 - true / false
      */
     boolean delete(int cId);
+
+    /**
+     * 根据用户名，更新登录时间和登录IP
+     * @param cPhone
+     */
+    void updateLoginTime(String cPhone);
 }

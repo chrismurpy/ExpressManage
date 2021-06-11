@@ -4,6 +4,7 @@ import com.murphy.bean.User;
 import com.murphy.dao.BaseUserDao;
 import com.murphy.dao.impl.UserDaoMysql;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -87,5 +88,14 @@ public class UserService {
      */
     public static boolean delete(int uId) {
         return dao.delete(uId);
+    }
+
+    /**
+     * 根据用户名，更新登录时间和登录IP
+     *
+     * @param uPhone
+     */
+    public static void updateLoginTime(String uPhone) {
+        dao.updateLoginTime(uPhone);
     }
 }

@@ -6,6 +6,7 @@ import com.murphy.util.DruidUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,11 @@ public class UserDaoMysql implements BaseUserDao {
      * 用户信息删除
      */
     private static final String SQL_DELETE = "DELETE FROM USER WHERE UID = ?";
+
+    /**
+     * 根据用户姓名，更新登录时间
+     */
+    private static final String SQL_UPDATE_LAST_LOGIN = "UPDATE USER SET  lastLogin = NOW() WHERE uPhone = ?";
 
     /**
      * 用于查询数据库中的所有用户信息 - 总人数 + 日注册量(新增)
@@ -293,5 +299,25 @@ public class UserDaoMysql implements BaseUserDao {
             DruidUtil.close(conn,state,null);
         }
         return false;
+    }
+
+    /**
+     * 根据用户名，更新登录时间和登录IP
+     *
+     * @param uPhone
+     */
+    @Override
+    public void updateLoginTime(String uPhone) {
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        try {
+            state = conn.prepareStatement(SQL_UPDATE_LAST_LOGIN);
+            state.setString(1, uPhone);
+            state.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            DruidUtil.close(conn,state,null);
+        }
     }
 }

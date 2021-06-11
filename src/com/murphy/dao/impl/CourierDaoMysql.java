@@ -6,6 +6,7 @@ import com.murphy.util.DruidUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class CourierDaoMysql implements BaseCourierDao {
             "COUNT(CID) C1_TOTAL, " +
             "COUNT(TO_DAYS(CINTIME)=TO_DAYS(NOW()) OR NULL) C1_DAY" +
             " FROM COURIER";
+
     /**
      * 用于查询所有快递员信息
      */
@@ -62,6 +64,11 @@ public class CourierDaoMysql implements BaseCourierDao {
      * 快递员信息删除
      */
     private static final String SQL_DELETE = "DELETE FROM COURIER WHERE CID = ?";
+
+    /**
+     * 根据用户名 - 更新登录时间
+     */
+    private static final String SQL_UPDATE_LAST_LOGIN = "UPDATE Courier SET lastLogin = NOW() WHERE cphone = ?";
 
     /**
      * 用于查询数据库中的所有快递员信息 - 总人数 + 日注册量(新增)
@@ -295,5 +302,25 @@ public class CourierDaoMysql implements BaseCourierDao {
             DruidUtil.close(conn,state,null);
         }
         return false;
+    }
+
+    /**
+     * 根据用户名，更新登录时间和登录IP
+     *
+     * @param cPhone
+     */
+    @Override
+    public void updateLoginTime(String cPhone) {
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        try {
+            state = conn.prepareStatement(SQL_UPDATE_LAST_LOGIN);
+            state.setString(1, cPhone);
+            state.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            DruidUtil.close(conn,state,null);
+        }
     }
 }

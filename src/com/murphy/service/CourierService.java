@@ -5,6 +5,7 @@ import com.murphy.dao.BaseCourierDao;
 import com.murphy.dao.impl.CourierDaoMysql;
 import com.murphy.exception.DuplicateCodeException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  * @author murphy
  * @since 2021/6/5 9:51 下午
  */
-public class CourierService{
+public class CourierService {
 
     private static BaseCourierDao dao = new CourierDaoMysql();
 
@@ -88,5 +89,14 @@ public class CourierService{
      */
     public static boolean delete(int cId) {
         return dao.delete(cId);
+    }
+
+    /**
+     * 根据用户名，更新登录时间和登录IP
+     *
+     * @param cPhone
+     */
+    public static void updateLoginTime(String cPhone) {
+        dao.updateLoginTime(cPhone);
     }
 }
