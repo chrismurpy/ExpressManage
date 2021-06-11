@@ -2,6 +2,7 @@ package com.murphy.wx.controller;
 
 import com.murphy.bean.*;
 import com.murphy.mvc.ResponseBody;
+import com.murphy.service.CourierService;
 import com.murphy.service.ExpressService;
 import com.murphy.util.DateFormatUtil;
 import com.murphy.util.JSONUtil;
@@ -176,6 +177,36 @@ public class ExpressController {
         } else {
             msg.setStatus(-1);
             msg.setResult("未查到相关信息");
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    @ResponseBody("/wx/addExpress.do")
+    public String addExpress(HttpServletRequest request, HttpServletResponse response) {
+        String number = request.getParameter("number");
+        String username = request.getParameter("username");
+        String userPhone = request.getParameter("userPhone");
+        String company = request.getParameter("company");
+        String sysPhone = ((Courier) UserUtil.getWxUser(request.getSession())).getcPhone();
+        Message msg = new Message();
+        Express e = ExpressService.findByNumber(number);
+        if (e != null) {
+            // 订单号重复
+            msg.setStatus(-1);
+            msg.setResult("录入失败！订单号重复");
+        } else {
+            Express e2 = new Express(number,username,userPhone,company,sysPhone);
+            boolean flag = ExpressService.insert(e2);
+            if (flag) {
+                // 快递录入成功
+                CourierService.updateCNumber(sysPhone);
+                msg.setStatus(0);
+                msg.setResult("快递录入成功");
+            } else {
+                msg.setStatus(-1);
+                msg.setResult("快递录入失败");
+            }
         }
         String json = JSONUtil.toJSON(msg);
         return json;

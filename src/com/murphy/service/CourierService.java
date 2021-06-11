@@ -99,4 +99,14 @@ public class CourierService {
     public static void updateLoginTime(String cPhone) {
         dao.updateLoginTime(cPhone);
     }
+
+    /**
+     * 更新派送快件数
+     *
+     * @param cPhone
+     * @return
+     */
+    public static boolean updateCNumber(String cPhone) {
+        return dao.updateCNumber(cPhone);
+    }
 }

@@ -71,6 +71,11 @@ public class CourierDaoMysql implements BaseCourierDao {
     private static final String SQL_UPDATE_LAST_LOGIN = "UPDATE Courier SET lastLogin = NOW() WHERE cphone = ?";
 
     /**
+     * 更新派送快件数 - 根据快递员手机号
+     */
+    private static final String SQL_UPDATE_C_NUMBER = "UPDATE COURIER SET CNUMBER = CNUMBER + 1 WHERE CPHONE = ?";
+
+    /**
      * 用于查询数据库中的所有快递员信息 - 总人数 + 日注册量(新增)
      *
      * @return [{total:总数, day:新增}]
@@ -322,5 +327,26 @@ public class CourierDaoMysql implements BaseCourierDao {
         } finally {
             DruidUtil.close(conn,state,null);
         }
+    }
+
+    /**
+     * 更新派送快件数
+     * @param cPhone
+     * @return
+     */
+    @Override
+    public boolean updateCNumber(String cPhone){
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        try {
+            state = conn.prepareStatement(SQL_UPDATE_C_NUMBER);
+            state.setString(1, cPhone);
+            state.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            DruidUtil.close(conn,state,null);
+        }
+        return false;
     }
 }

@@ -70,4 +70,11 @@ public interface BaseCourierDao {
      * @param cPhone
      */
     void updateLoginTime(String cPhone);
+
+    /**
+     * 更新派送快件数
+     * @param cPhone
+     * @return
+     */
+    boolean updateCNumber(String cPhone);
 }

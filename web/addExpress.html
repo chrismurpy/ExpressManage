@@ -12,6 +12,7 @@
 	<script src="js/notice.js" type="text/javascript"></script>
 	<script src="js/regexp.js" type="text/javascript"></script>
 	<script src="js/jweixin-1.2.0.js" type="text/javascript"></script>
+	<script src="layer/layer.js"></script>
 	<style type="text/css">
 		.content{
 			position: relative;
@@ -98,8 +99,8 @@
 	<div class="headerNav">
 		<div class="headerNavTop"><div class="headerNavIcon headerNavIconOut"><span></span><span></span></div></div>
 		<div class="headerNavCont">
-			<a href="index.html">快递首页</a>
-			<a href="userhome.html">个人中心</a>
+			<a href="/index.html">快递首页</a>
+			<a href="/userhome.html">个人中心</a>
 			<a href="delivery.html">送货上门</a>
 			<a href="sendexpress.html">我要寄件</a>
 			<a href="lazyboard.html">懒人排行</a>
@@ -123,15 +124,15 @@
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">单号</div>
-						<input type="text" id="expressId" class="commonInputFunc" name="expressId" placeholder="请输入快递单号...">
+						<input type="text" id="number" class="commonInputFunc" name="number" placeholder="请输入快递单号...">
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">姓名</div>
-						<input type="text" id="username" class="commonInputFunc" name="phone" placeholder="请输入收件人姓名">
+						<input type="text" id="username" class="commonInputFunc" name="username" placeholder="请输入收件人姓名">
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">手机</div>
-						<input type="text" id="phone" class="commonInputFunc" name="phone" placeholder="录入后短信自动提醒">
+						<input type="text" id="userPhone" class="commonInputFunc" name="userPhone" placeholder="录入后短信自动提醒">
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">公司</div>
@@ -141,12 +142,59 @@
 					</div>
 				</div>
 			</form>
-			<div class="submitBtn">录入信息</div>
+			<div class="submitBtn" id="submitBtn">录入信息</div>
 		</div>
 	</div>
 </div>
 <script type="text/javascript">
-	
+	function checkNumber(){
+		var expressNumber = $("#number").val();
+		if (expressNumber.length == 0){
+			alert("请输入正确的快递单号");
+			return false;
+		}
+		return true;
+	}
+
+	function checkName(){
+		var username = $("#username").val();
+		if (username.length == 0){
+			alert("请输入正确的收件人姓名");
+			return false;
+		}
+		return true;
+	}
+
+	function checkUserPhone(){
+		var userPhone = $("#userPhone").val();
+		var reg = /^1[3456789]\d{9}$/;
+		if (!reg.test(userPhone)){
+			alert("请输入正确的手机号");
+			return false;
+		}
+		return true;
+	}
+
+	$(function (){
+		$("#submitBtn").click(function (){
+			var number = $("#number").val();
+			var username = $("#username").val();
+			var userPhone = $("#userPhone").val();
+			var company = $("#company").val();
+			if (checkNumber() && checkName() && checkUserPhone()) {
+				var windowId = layer.load();
+				$.post("/wx/addExpress.do",{number:number,username:username,userPhone:userPhone,company:company},
+				function (data){
+					layer.close(windowId);
+					layer.msg(data.result);
+					if (data.status == 0) {
+						$("input").val("");
+						$("input:eq(10)").val("顺丰快递");
+					}
+				});
+			}
+		});
+	});
 </script>
 </body>
 </html>
