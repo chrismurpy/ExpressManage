@@ -91,6 +91,18 @@ public class ExpressDaoMysql implements BaseExpressDao {
     private static final String SQL_DELETE = "DELETE FROM EXPRESS WHERE ID = ?";
 
     /**
+     * 查询一年内某用户的总快递数
+     */
+    private static final String SQL_FIND_BY_PHONE_AMONG_YEAR = "SELECT * FROM EXPRESS WHERE USERPHONE = ? " +
+            "AND YEAR(NOW()) - YEAR(INTIME) < 1";
+
+    /**
+     * 查询一月内某用户的总快递数
+     */
+    private static final String SQL_FIND_BY_PHONE_AMONG_MONTH = "SELECT * FROM EXPRESS WHERE USERPHONE = ? " +
+            "AND MONTH(NOW()) - MONTH(INTIME) < 1";
+
+    /**
      * 用于查询数据库中的全部快递(总数+新增)，待取件快递(总数+新增)
      *
      * @return [{size:总数, day:新增}, {size:总数, day:新增}]
@@ -554,5 +566,85 @@ public class ExpressDaoMysql implements BaseExpressDao {
             DruidUtil.close(conn,state,null);
         }
         return false;
+    }
+
+    /**
+     * 根据手机号查询一年内的所有快递数
+     *
+     * @param uPhone
+     * @return
+     */
+    @Override
+    public List<Express> findAllAmongYearByPhone(String uPhone) {
+        ArrayList<Express> list = new ArrayList<>();
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        ResultSet result = null;
+        try {
+            state = conn.prepareStatement(SQL_FIND_BY_PHONE_AMONG_YEAR);
+            state.setString(1, uPhone);
+            result = state.executeQuery();
+            while (result.next()) {
+                Integer id = result.getInt(1);
+                String number = result.getString(2);
+                String userName = result.getString(3);
+                String userPhone = result.getString(4);
+                String company = result.getString(5);
+                String code = result.getString(6);
+                Timestamp inTime = result.getTimestamp(7);
+                Timestamp outTime = result.getTimestamp(8);
+                Integer status = result.getInt(9);
+                String sysPhone = result.getString(10);
+                String departure = result.getString(11);
+                String destination = result.getString(12);
+                Express e = new Express(id,number,userName,userPhone,company,code,inTime,outTime,status,sysPhone,departure,destination);
+                list.add(e);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            DruidUtil.close(conn,state,result);
+        }
+        return list;
+    }
+
+    /**
+     * 根据手机号查询一月内的所有快递数
+     *
+     * @param uPhone
+     * @return
+     */
+    @Override
+    public List<Express> findAllAmongMonthByPhone(String uPhone) {
+        ArrayList<Express> list = new ArrayList<>();
+        Connection conn = DruidUtil.getConnection();
+        PreparedStatement state = null;
+        ResultSet result = null;
+        try {
+            state = conn.prepareStatement(SQL_FIND_BY_PHONE_AMONG_MONTH);
+            state.setString(1, uPhone);
+            result = state.executeQuery();
+            while (result.next()) {
+                Integer id = result.getInt(1);
+                String number = result.getString(2);
+                String userName = result.getString(3);
+                String userPhone = result.getString(4);
+                String company = result.getString(5);
+                String code = result.getString(6);
+                Timestamp inTime = result.getTimestamp(7);
+                Timestamp outTime = result.getTimestamp(8);
+                Integer status = result.getInt(9);
+                String sysPhone = result.getString(10);
+                String departure = result.getString(11);
+                String destination = result.getString(12);
+                Express e = new Express(id,number,userName,userPhone,company,code,inTime,outTime,status,sysPhone,departure,destination);
+                list.add(e);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            DruidUtil.close(conn,state,result);
+        }
+        return list;
     }
 }

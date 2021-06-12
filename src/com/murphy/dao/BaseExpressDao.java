@@ -97,4 +97,18 @@ public interface BaseExpressDao {
      * @return [{area: 地区, size: 数量}]
      */
     List<Map<String, Integer>> areaAll();
+
+    /**
+     * 根据手机号查询一年内的所有快递数
+     * @param uPhone
+     * @return
+     */
+    List<Express> findAllAmongYearByPhone(String uPhone);
+
+    /**
+     * 根据手机号查询一月内的所有快递数
+     * @param uPhone
+     * @return
+     */
+    List<Express> findAllAmongMonthByPhone(String uPhone);
 }

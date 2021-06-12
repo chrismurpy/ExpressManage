@@ -38,6 +38,26 @@ public class ExpressService {
     }
 
     /**
+     * 根据手机号查询一年内的所有快递数
+     *
+     * @param uPhone
+     * @return
+     */
+    public static List<Express> findAllAmongYearByPhone(String uPhone) {
+        return dao.findAllAmongYearByPhone(uPhone);
+    }
+
+    /**
+     * 根据手机号查询一月内的所有快递数
+     *
+     * @param uPhone
+     * @return
+     */
+    public static List<Express> findAllAmongMonthByPhone(String uPhone) {
+        return dao.findAllAmongMonthByPhone(uPhone);
+    }
+
+    /**
      * 用于查询所有快递
      *
      * @param limit      是否分页的标记 - true表示分页 / false表示查询所有快递

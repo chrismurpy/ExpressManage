@@ -1,16 +1,18 @@
 package com.murphy.wx.controller;
 
-import com.murphy.bean.Courier;
-import com.murphy.bean.Message;
-import com.murphy.bean.User;
+import com.murphy.bean.*;
 import com.murphy.mvc.ResponseBody;
 import com.murphy.service.CourierService;
+import com.murphy.service.ExpressService;
 import com.murphy.service.UserService;
 import com.murphy.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 用户登录
@@ -266,6 +268,97 @@ public class UserController {
         } else {
             msg.setStatus(1);
             msg.setResult(((Courier) wxUser).getcName());
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 懒人排行榜 总榜
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/lazyBoardTotal.do")
+    public String lazyBoardTotal(HttpServletRequest request, HttpServletResponse response){
+        List<User> users = UserService.findAll(false,0,0);
+        List<LazyBoard> result = new ArrayList<>();
+
+        for (User user : users) {
+            List<Express> expressList = ExpressService.findByUserPhone(user.getuPhone());
+            LazyBoard la = new LazyBoard(user.getuPhone(), user.getuName(), expressList.size());
+            result.add(la);
+        }
+
+        Collections.sort(result);
+        Message msg = new Message();
+        if (!result.isEmpty()) {
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+            msg.setData(result);
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("查询失败");
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 懒人排行榜 年榜
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/lazyBoardYear.do")
+    public String lazyBoardYear(HttpServletRequest request, HttpServletResponse response) {
+        List<User> users = UserService.findAll(false,0,0);
+        List<LazyBoard> result = new ArrayList<>();
+        for (User user : users) {
+            List<Express> expressList = ExpressService.findAllAmongYearByPhone(user.getuPhone());
+            LazyBoard la = new LazyBoard(user.getuPhone(), user.getuName(), expressList.size());
+            result.add(la);
+        }
+
+        Collections.sort(result);
+        Message msg = new Message();
+        if (!result.isEmpty()) {
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+            msg.setData(result);
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("查询失败");
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
+     * 懒人排行榜 月榜
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/lazyBoardMonth.do")
+    public String lazyBoardMonth(HttpServletRequest request, HttpServletResponse response) {
+        List<User> users = UserService.findAll(false,0,0);
+        List<LazyBoard> result = new ArrayList<>();
+        for (User user : users) {
+            List<Express> expressList = ExpressService.findAllAmongMonthByPhone(user.getuPhone());
+            LazyBoard la = new LazyBoard(user.getuPhone(), user.getuName(), expressList.size());
+            result.add(la);
+        }
+
+        Collections.sort(result);
+        Message msg = new Message();
+        if (!result.isEmpty()) {
+            msg.setStatus(0);
+            msg.setResult("查询成功");
+            msg.setData(result);
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("查询失败");
         }
         String json = JSONUtil.toJSON(msg);
         return json;
