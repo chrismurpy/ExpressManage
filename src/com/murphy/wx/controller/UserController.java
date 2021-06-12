@@ -45,6 +45,30 @@ public class UserController {
     }
 
     /**
+     * 修改个人信息验证码
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/updateSms.do")
+    public String sendUpdateSms(HttpServletRequest request, HttpServletResponse response) {
+        String userPhone = request.getParameter("userPhone");
+        String code = RandomUtil.getCode() + "";
+        boolean flag = SMSLogin.updateSMS(userPhone, code);
+        Message msg = new Message();
+        if (flag) {
+            msg.setStatus(0);
+            msg.setResult("模拟验证码已发送！请查收");
+        } else {
+            msg.setStatus(-1);
+            msg.setResult("模拟验证码发送失败，请检查手机号再试试！");
+        }
+        UserUtil.setUpdateSms(request.getSession(), userPhone, code);
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
      * 微信端用户/快递员登录
      * @param request
      * @param response
@@ -102,6 +126,69 @@ public class UserController {
     }
 
     /**
+     * 个人中心 - 信息更改
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/editUserInfo.do")
+    public String editUserInfo(HttpServletRequest request, HttpServletResponse response) {
+        String newName = request.getParameter("newName");
+        String password = request.getParameter("password");
+        String newPhone = request.getParameter("newPhone");
+        String newID = request.getParameter("newID");
+        String verify = request.getParameter("verify");
+
+        String sysCode = UserUtil.getUpdateSms(request.getSession(), newPhone);
+        Message msg = new Message();
+        if (sysCode == null) {
+            msg.setStatus(-1);
+            msg.setResult("手机号码未获取到短信");
+        } else if (sysCode.equals(verify)) {
+            Object wxUser = UserUtil.getWxUser(request.getSession());
+            if (wxUser instanceof User) {
+                User newUser = UserService.findByuPhone(((User) wxUser).getuPhone());
+                int id = newUser.getuId();
+                newUser.setuName(newName);
+                newUser.setPassword(password);
+                newUser.setuPhone(newPhone);
+                newUser.setIdNumber(newID);
+                boolean flag = UserService.update(id, newUser);
+                if (flag) {
+                    msg.setStatus(0);
+                    msg.setResult("修改成功");
+                    UserUtil.setWxUser(request.getSession(), newUser);
+                } else {
+                    msg.setStatus(-2);
+                    msg.setResult("修改失败");
+                }
+            } else if (wxUser instanceof Courier) {
+                Courier c = CourierService.findBycPhone(((Courier) wxUser).getcPhone());
+                int id = c.getcId();
+                c.setcName(newName);
+                c.setPassword(password);
+                c.setcPhone(newPhone);
+                c.setIdNumber(newID);
+                boolean flag = CourierService.update(id, c);
+                if (flag) {
+                    msg.setStatus(0);
+                    msg.setResult("修改成功");
+                    UserUtil.setWxUser(request.getSession(), c);
+                } else {
+                    msg.setStatus(-2);
+                    msg.setResult("修改失败");
+                }
+            } else {
+                // 验证码不一致
+                msg.setStatus(-3);
+                msg.setResult("验证码错误，请检查");
+            }
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
      * 用户/快递员 主页面展示
      * @param request
      * @param response
@@ -124,6 +211,30 @@ public class UserController {
     }
 
     /**
+     * 用户/快递员 信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/findInfo.do")
+    public String findInfo(HttpServletRequest request, HttpServletResponse response) {
+        Object wxUser = UserUtil.getWxUser(request.getSession());
+        boolean isUser = wxUser instanceof User;
+        Message msg = new Message();
+        if (isUser) {
+            msg.setStatus(0);
+            msg.setResult("用户信息获取成功");
+            msg.setData((User) wxUser);
+        } else {
+            msg.setStatus(1);
+            msg.setResult("快递员信息获取成功");
+            msg.setData((Courier) wxUser);
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
+    }
+
+    /**
      * 退出登录
      * @param request
      * @param response
@@ -136,5 +247,27 @@ public class UserController {
         // 2. 给客户端回复消息
         Message msg = new Message(0);
         return JSONUtil.toJSON(msg);
+    }
+
+    /**
+     * 个人中心 - 昵称显示
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody("/wx/showName.do")
+    public String showUsername(HttpServletRequest request, HttpServletResponse response) {
+        Object wxUser = UserUtil.getWxUser(request.getSession());
+        boolean isUser = wxUser instanceof User;
+        Message msg = new Message();
+        if (isUser) {
+            msg.setStatus(0);
+            msg.setResult(((User) wxUser).getuName());
+        } else {
+            msg.setStatus(1);
+            msg.setResult(((Courier) wxUser).getcName());
+        }
+        String json = JSONUtil.toJSON(msg);
+        return json;
     }
 }

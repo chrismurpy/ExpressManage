@@ -46,4 +46,12 @@ public class UserUtil {
         return session.getAttribute("wxUser");
     }
 
+    public static String getUpdateSms(HttpSession session, String userPhone) {
+        return (String) session.getAttribute(userPhone);
+    }
+
+    public static void setUpdateSms(HttpSession session, String userPhone, String code) {
+        session.setAttribute(userPhone, code);
+    }
+
 }
